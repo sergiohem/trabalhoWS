@@ -177,7 +177,7 @@ namespace SportingTrainingAPI.Controllers
                             novaInscricao.IdEvento = formulario.IdEventoInscricao;
                             novaInscricao.InscricaoAtleta = "Ativa";
                             novaInscricao.DataInscricao = DateTime.Now;
-
+                            //teste
                             context.EventosAtletas.Add(novaInscricao);
 
                             context.SaveChanges();
