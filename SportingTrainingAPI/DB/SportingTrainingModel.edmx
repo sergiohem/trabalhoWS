@@ -1,0 +1,391 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="SportingTrainingModel.Store" Provider="MySql.Data.MySqlClient" ProviderManifestToken="5.7" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="atleta">
+          <Key>
+            <PropertyRef Name="IdAtleta" />
+          </Key>
+          <Property Name="IdAtleta" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="IdUsuario" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="Nome" Type="varchar" MaxLength="80" Nullable="false" />
+          <Property Name="Endereco" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="DataNascimento" Type="date" Nullable="false" />
+          <Property Name="TipoSanguineo" Type="varchar" MaxLength="5" Nullable="false" />
+          <Property Name="PlanoDeSaude" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="Cpf" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="Nacionalidade" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="Equipe" Type="varchar" MaxLength="45" Nullable="false" />
+        </EntityType>
+        <EntityType Name="evento">
+          <Key>
+            <PropertyRef Name="IdEvento" />
+          </Key>
+          <Property Name="IdEvento" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Nome" Type="varchar" MaxLength="60" Nullable="false" />
+          <Property Name="Descricao" Type="mediumtext" Nullable="false" />
+          <Property Name="Data" Type="date" Nullable="false" />
+          <Property Name="Hora" Type="time" Precision="0" Nullable="false" />
+          <Property Name="Local" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="Estado" Type="varchar" MaxLength="2" Nullable="false" />
+          <Property Name="Modalidade" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="ValorInscricao" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="TerminoInscricoes" Type="datetime" Precision="0" Nullable="false" />
+          <Property Name="TempoLimiteEvento" Type="time" Precision="0" Nullable="false" />
+          <Property Name="Responsavel" Type="varchar" MaxLength="60" Nullable="false" />
+          <Property Name="Percurso" Type="mediumtext" />
+          <Property Name="Situacao" Type="enum" Nullable="false" />
+          <Property Name="MotivoCancelamento" Type="mediumtext" />
+        </EntityType>
+        <EntityType Name="evento_atleta">
+          <Key>
+            <PropertyRef Name="IdEventoAtleta" />
+          </Key>
+          <Property Name="IdEventoAtleta" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdEvento" Type="int" Nullable="false" />
+          <Property Name="IdAtleta" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="InscricaoAtleta" Type="enum" Nullable="false" />
+          <Property Name="DataInscricao" Type="date" Nullable="false" />
+        </EntityType>
+        <EntityType Name="login_usuario">
+          <Key>
+            <PropertyRef Name="IdLoginUsuario" />
+          </Key>
+          <Property Name="IdLoginUsuario" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdUsuario" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="Token" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="InicioSessao" Type="datetime" Precision="0" Nullable="false" />
+          <Property Name="FimSessao" Type="datetime" Precision="0" Nullable="false" />
+        </EntityType>
+        <EntityType Name="usuario">
+          <Key>
+            <PropertyRef Name="IdUsuario" />
+          </Key>
+          <Property Name="IdUsuario" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="Login" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="Senha" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="NomeUsuario" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="TipoUsuario" Type="enum" Nullable="false" />
+        </EntityType>
+        <Association Name="fk_evento_atleta_id_atleta">
+          <End Role="atleta" Type="Self.atleta" Multiplicity="1" />
+          <End Role="evento_atleta" Type="Self.evento_atleta" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="atleta">
+              <PropertyRef Name="IdAtleta" />
+            </Principal>
+            <Dependent Role="evento_atleta">
+              <PropertyRef Name="IdAtleta" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_evento_atleta_id_evento">
+          <End Role="evento" Type="Self.evento" Multiplicity="1" />
+          <End Role="evento_atleta" Type="Self.evento_atleta" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="evento">
+              <PropertyRef Name="IdEvento" />
+            </Principal>
+            <Dependent Role="evento_atleta">
+              <PropertyRef Name="IdEvento" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_id_usuario_atleta">
+          <End Role="usuario" Type="Self.usuario" Multiplicity="1" />
+          <End Role="atleta" Type="Self.atleta" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="usuario">
+              <PropertyRef Name="IdUsuario" />
+            </Principal>
+            <Dependent Role="atleta">
+              <PropertyRef Name="IdUsuario" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_id_usuario_login_usuario">
+          <End Role="usuario" Type="Self.usuario" Multiplicity="1" />
+          <End Role="login_usuario" Type="Self.login_usuario" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="usuario">
+              <PropertyRef Name="IdUsuario" />
+            </Principal>
+            <Dependent Role="login_usuario">
+              <PropertyRef Name="IdUsuario" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SportingTrainingModelStoreContainer">
+          <EntitySet Name="atleta" EntityType="Self.atleta" Schema="sporting_training" store:Type="Tables" />
+          <EntitySet Name="evento" EntityType="Self.evento" Schema="sporting_training" store:Type="Tables" />
+          <EntitySet Name="evento_atleta" EntityType="Self.evento_atleta" Schema="sporting_training" store:Type="Tables" />
+          <EntitySet Name="login_usuario" EntityType="Self.login_usuario" Schema="sporting_training" store:Type="Tables" />
+          <EntitySet Name="usuario" EntityType="Self.usuario" Schema="sporting_training" store:Type="Tables" />
+          <AssociationSet Name="fk_evento_atleta_id_atleta" Association="Self.fk_evento_atleta_id_atleta">
+            <End Role="atleta" EntitySet="atleta" />
+            <End Role="evento_atleta" EntitySet="evento_atleta" />
+          </AssociationSet>
+          <AssociationSet Name="fk_evento_atleta_id_evento" Association="Self.fk_evento_atleta_id_evento">
+            <End Role="evento" EntitySet="evento" />
+            <End Role="evento_atleta" EntitySet="evento_atleta" />
+          </AssociationSet>
+          <AssociationSet Name="fk_id_usuario_atleta" Association="Self.fk_id_usuario_atleta">
+            <End Role="usuario" EntitySet="usuario" />
+            <End Role="atleta" EntitySet="atleta" />
+          </AssociationSet>
+          <AssociationSet Name="fk_id_usuario_login_usuario" Association="Self.fk_id_usuario_login_usuario">
+            <End Role="usuario" EntitySet="usuario" />
+            <End Role="login_usuario" EntitySet="login_usuario" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="SportingTrainingModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Atleta">
+          <Key>
+            <PropertyRef Name="IdAtleta" />
+          </Key>
+          <Property Name="IdAtleta" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="IdUsuario" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Nome" Type="String" MaxLength="80" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Endereco" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DataNascimento" Type="DateTime" Nullable="false" />
+          <Property Name="TipoSanguineo" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="PlanoDeSaude" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Cpf" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Nacionalidade" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Equipe" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="EventosAtleta" Relationship="Self.fk_evento_atleta_id_atleta" FromRole="atleta" ToRole="evento_atleta" />
+          <NavigationProperty Name="Usuario" Relationship="Self.fk_id_usuario_atleta" FromRole="atleta" ToRole="usuario" />
+        </EntityType>
+        <EntityType Name="Evento">
+          <Key>
+            <PropertyRef Name="IdEvento" />
+          </Key>
+          <Property Name="IdEvento" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Nome" Type="String" MaxLength="60" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Descricao" Type="String" MaxLength="16777215" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Data" Type="DateTime" Nullable="false" />
+          <Property Name="Hora" Type="Time" Nullable="false" />
+          <Property Name="Local" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Estado" Type="String" MaxLength="2" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Modalidade" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ValorInscricao" Type="Decimal" Nullable="false" />
+          <Property Name="TerminoInscricoes" Type="DateTime" Nullable="false" />
+          <Property Name="TempoLimiteEvento" Type="Time" Nullable="false" />
+          <Property Name="Responsavel" Type="String" MaxLength="60" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Percurso" Type="String" MaxLength="16777215" FixedLength="false" Unicode="false" />
+          <Property Name="Situacao" Type="String" MaxLength="65532" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="EventoAtletas" Relationship="Self.fk_evento_atleta_id_evento" FromRole="evento" ToRole="evento_atleta" />
+          <Property Name="MotivoCancelamento" Type="String" MaxLength="16777215" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="EventoAtleta">
+          <Key>
+            <PropertyRef Name="IdEventoAtleta" />
+          </Key>
+          <Property Name="IdEventoAtleta" Type="Int32" Nullable="false" />
+          <Property Name="IdEvento" Type="Int32" Nullable="false" />
+          <Property Name="IdAtleta" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Atleta" Relationship="Self.fk_evento_atleta_id_atleta" FromRole="evento_atleta" ToRole="atleta" />
+          <NavigationProperty Name="Evento" Relationship="Self.fk_evento_atleta_id_evento" FromRole="evento_atleta" ToRole="evento" />
+          <Property Name="InscricaoAtleta" Type="String" Nullable="false" MaxLength="65532" FixedLength="false" Unicode="false" />
+          <Property Name="DataInscricao" Type="DateTime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="LoginUsuario">
+          <Key>
+            <PropertyRef Name="IdLoginUsuario" />
+          </Key>
+          <Property Name="IdLoginUsuario" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdUsuario" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Token" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="InicioSessao" Type="DateTime" Nullable="false" />
+          <Property Name="FimSessao" Type="DateTime" Nullable="false" />
+          <NavigationProperty Name="Usuario" Relationship="Self.fk_id_usuario_login_usuario" FromRole="login_usuario" ToRole="usuario" />
+        </EntityType>
+        <EntityType Name="Usuario">
+          <Key>
+            <PropertyRef Name="IdUsuario" />
+          </Key>
+          <Property Name="IdUsuario" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Login" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Senha" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="NomeUsuario" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="TipoUsuario" Type="String" MaxLength="65532" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Atletas" Relationship="Self.fk_id_usuario_atleta" FromRole="usuario" ToRole="atleta" />
+          <NavigationProperty Name="LoginsUsuario" Relationship="Self.fk_id_usuario_login_usuario" FromRole="usuario" ToRole="login_usuario" />
+        </EntityType>
+        <Association Name="fk_evento_atleta_id_atleta">
+          <End Role="atleta" Type="SportingTrainingModel.Atleta" Multiplicity="1" />
+          <End Role="evento_atleta" Type="SportingTrainingModel.EventoAtleta" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="atleta">
+              <PropertyRef Name="IdAtleta" />
+            </Principal>
+            <Dependent Role="evento_atleta">
+              <PropertyRef Name="IdAtleta" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_id_usuario_atleta">
+          <End Role="usuario" Type="SportingTrainingModel.Usuario" Multiplicity="1" />
+          <End Role="atleta" Type="SportingTrainingModel.Atleta" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="usuario">
+              <PropertyRef Name="IdUsuario" />
+            </Principal>
+            <Dependent Role="atleta">
+              <PropertyRef Name="IdUsuario" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_evento_atleta_id_evento">
+          <End Role="evento" Type="SportingTrainingModel.Evento" Multiplicity="1" />
+          <End Role="evento_atleta" Type="SportingTrainingModel.EventoAtleta" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="evento">
+              <PropertyRef Name="IdEvento" />
+            </Principal>
+            <Dependent Role="evento_atleta">
+              <PropertyRef Name="IdEvento" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_id_usuario_login_usuario">
+          <End Role="usuario" Type="SportingTrainingModel.Usuario" Multiplicity="1" />
+          <End Role="login_usuario" Type="SportingTrainingModel.LoginUsuario" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="usuario">
+              <PropertyRef Name="IdUsuario" />
+            </Principal>
+            <Dependent Role="login_usuario">
+              <PropertyRef Name="IdUsuario" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SportingTrainingEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Atletas" EntityType="SportingTrainingModel.Atleta" />
+          <EntitySet Name="Eventos" EntityType="SportingTrainingModel.Evento" />
+          <EntitySet Name="EventosAtletas" EntityType="SportingTrainingModel.EventoAtleta" />
+          <EntitySet Name="LoginsUsuario" EntityType="SportingTrainingModel.LoginUsuario" />
+          <EntitySet Name="Usuarios" EntityType="SportingTrainingModel.Usuario" />
+          <AssociationSet Name="fk_evento_atleta_id_atleta" Association="Self.fk_evento_atleta_id_atleta">
+            <End Role="atleta" EntitySet="Atletas" />
+            <End Role="evento_atleta" EntitySet="EventosAtletas" />
+          </AssociationSet>
+          <AssociationSet Name="fk_id_usuario_atleta" Association="Self.fk_id_usuario_atleta">
+            <End Role="usuario" EntitySet="Usuarios" />
+            <End Role="atleta" EntitySet="Atletas" />
+          </AssociationSet>
+          <AssociationSet Name="fk_evento_atleta_id_evento" Association="Self.fk_evento_atleta_id_evento">
+            <End Role="evento" EntitySet="Eventos" />
+            <End Role="evento_atleta" EntitySet="EventosAtletas" />
+          </AssociationSet>
+          <AssociationSet Name="fk_id_usuario_login_usuario" Association="Self.fk_id_usuario_login_usuario">
+            <End Role="usuario" EntitySet="Usuarios" />
+            <End Role="login_usuario" EntitySet="LoginsUsuario" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="SportingTrainingModelStoreContainer" CdmEntityContainer="SportingTrainingEntities">
+          <EntitySetMapping Name="Atletas">
+            <EntityTypeMapping TypeName="SportingTrainingModel.Atleta">
+              <MappingFragment StoreEntitySet="atleta">
+                <ScalarProperty Name="IdAtleta" ColumnName="IdAtleta" />
+                <ScalarProperty Name="IdUsuario" ColumnName="IdUsuario" />
+                <ScalarProperty Name="Nome" ColumnName="Nome" />
+                <ScalarProperty Name="Endereco" ColumnName="Endereco" />
+                <ScalarProperty Name="DataNascimento" ColumnName="DataNascimento" />
+                <ScalarProperty Name="TipoSanguineo" ColumnName="TipoSanguineo" />
+                <ScalarProperty Name="PlanoDeSaude" ColumnName="PlanoDeSaude" />
+                <ScalarProperty Name="Cpf" ColumnName="Cpf" />
+                <ScalarProperty Name="Nacionalidade" ColumnName="Nacionalidade" />
+                <ScalarProperty Name="Equipe" ColumnName="Equipe" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Eventos">
+            <EntityTypeMapping TypeName="SportingTrainingModel.Evento">
+              <MappingFragment StoreEntitySet="evento">
+                <ScalarProperty Name="MotivoCancelamento" ColumnName="MotivoCancelamento" />
+                <ScalarProperty Name="IdEvento" ColumnName="IdEvento" />
+                <ScalarProperty Name="Nome" ColumnName="Nome" />
+                <ScalarProperty Name="Descricao" ColumnName="Descricao" />
+                <ScalarProperty Name="Data" ColumnName="Data" />
+                <ScalarProperty Name="Hora" ColumnName="Hora" />
+                <ScalarProperty Name="Local" ColumnName="Local" />
+                <ScalarProperty Name="Estado" ColumnName="Estado" />
+                <ScalarProperty Name="Modalidade" ColumnName="Modalidade" />
+                <ScalarProperty Name="ValorInscricao" ColumnName="ValorInscricao" />
+                <ScalarProperty Name="TerminoInscricoes" ColumnName="TerminoInscricoes" />
+                <ScalarProperty Name="TempoLimiteEvento" ColumnName="TempoLimiteEvento" />
+                <ScalarProperty Name="Responsavel" ColumnName="Responsavel" />
+                <ScalarProperty Name="Percurso" ColumnName="Percurso" />
+                <ScalarProperty Name="Situacao" ColumnName="Situacao" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EventosAtletas">
+            <EntityTypeMapping TypeName="SportingTrainingModel.EventoAtleta">
+              <MappingFragment StoreEntitySet="evento_atleta">
+                <ScalarProperty Name="DataInscricao" ColumnName="DataInscricao" />
+                <ScalarProperty Name="InscricaoAtleta" ColumnName="InscricaoAtleta" />
+                <ScalarProperty Name="IdEventoAtleta" ColumnName="IdEventoAtleta" />
+                <ScalarProperty Name="IdEvento" ColumnName="IdEvento" />
+                <ScalarProperty Name="IdAtleta" ColumnName="IdAtleta" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LoginsUsuario">
+            <EntityTypeMapping TypeName="SportingTrainingModel.LoginUsuario">
+              <MappingFragment StoreEntitySet="login_usuario">
+                <ScalarProperty Name="IdLoginUsuario" ColumnName="IdLoginUsuario" />
+                <ScalarProperty Name="IdUsuario" ColumnName="IdUsuario" />
+                <ScalarProperty Name="Token" ColumnName="Token" />
+                <ScalarProperty Name="InicioSessao" ColumnName="InicioSessao" />
+                <ScalarProperty Name="FimSessao" ColumnName="FimSessao" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Usuarios">
+            <EntityTypeMapping TypeName="SportingTrainingModel.Usuario">
+              <MappingFragment StoreEntitySet="usuario">
+                <ScalarProperty Name="IdUsuario" ColumnName="IdUsuario" />
+                <ScalarProperty Name="Login" ColumnName="Login" />
+                <ScalarProperty Name="Senha" ColumnName="Senha" />
+                <ScalarProperty Name="NomeUsuario" ColumnName="NomeUsuario" />
+                <ScalarProperty Name="TipoUsuario" ColumnName="TipoUsuario" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

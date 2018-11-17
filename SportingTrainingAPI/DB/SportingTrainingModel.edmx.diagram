@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="6d437363f2874a58bb28c03ad77475e3" Name="Diagram1">
+        <EntityTypeShape EntityType="SportingTrainingModel.Atleta" Width="1.5" PointX="3" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="SportingTrainingModel.Evento" Width="1.5" PointX="3" PointY="8.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="SportingTrainingModel.EventoAtleta" Width="1.5" PointX="5.25" PointY="1.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="SportingTrainingModel.LoginUsuario" Width="1.5" PointX="3" PointY="5.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="SportingTrainingModel.Usuario" Width="1.5" PointX="0.75" PointY="3.125" IsExpanded="true" />
+        <AssociationConnector Association="SportingTrainingModel.fk_evento_atleta_id_atleta" ManuallyRouted="false" />
+        <AssociationConnector Association="SportingTrainingModel.fk_id_usuario_atleta" ManuallyRouted="false" />
+        <AssociationConnector Association="SportingTrainingModel.fk_evento_atleta_id_evento" ManuallyRouted="false" />
+        <AssociationConnector Association="SportingTrainingModel.fk_id_usuario_login_usuario" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
