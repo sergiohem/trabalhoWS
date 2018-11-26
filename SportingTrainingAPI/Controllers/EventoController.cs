@@ -177,7 +177,7 @@ namespace SportingTrainingAPI.Controllers
             {
                 context.Configuration.ProxyCreationEnabled = false;
 
-                var consultaEventos = context.Eventos.ToList().AsQueryable();
+                var consultaEventos = context.Eventos.AsQueryable();
                 if (!string.IsNullOrEmpty(filtro.EstadoBusca))
                 {
                     consultaEventos = consultaEventos.Where(x => x.Estado == filtro.EstadoBusca);

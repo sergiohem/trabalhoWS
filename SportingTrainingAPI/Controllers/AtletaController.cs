@@ -1,10 +1,12 @@
-﻿using SportingTrainingAPI.DB;
+﻿using Newtonsoft.Json;
+using SportingTrainingAPI.DB;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Validation;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web.Http;
 
 namespace SportingTrainingAPI.Controllers
@@ -21,6 +23,17 @@ namespace SportingTrainingAPI.Controllers
             public string ModalidadeBusca { get; set; }
             public string DataInicioBusca { get; set; }
             public string DataFimBusca { get; set; }
+        }
+
+        private class InscricaoJson
+        {
+            public string NomeAtleta { get; set; }
+            public string NomeEvento { get; set; }
+            public string ModalidadeEvento { get; set; }
+            public string SituacaoEvento { get; set; }
+            public DateTime DataEvento { get; set; }
+            public string StatusInscricao { get; set; }
+            public DateTime DataInscricao { get; set; }
         }
 
         private UsuarioController usuarioController = new UsuarioController();
@@ -116,7 +129,7 @@ namespace SportingTrainingAPI.Controllers
 
         [Route("ExcluirAtleta")]
         [HttpPost]
-        public string ExcluirAtleta(SimuladorFormularioDeAtleta formulario, string token)
+        public string ExcluirAtleta([FromBody]SimuladorFormularioDeAtleta formulario, string token)
         {
             using (SportingTrainingEntities context = new SportingTrainingEntities())
             {
@@ -161,7 +174,7 @@ namespace SportingTrainingAPI.Controllers
 
         [Route("InscreverAtletaEmEvento")]
         [HttpPost]
-        public string InscreverAtletaEmEvento(SimuladorFormularioDeAtleta formulario, string token)
+        public string InscreverAtletaEmEvento([FromBody]SimuladorFormularioDeAtleta formulario, string token)
         {
             using (SportingTrainingEntities context = new SportingTrainingEntities())
             {
@@ -173,11 +186,10 @@ namespace SportingTrainingAPI.Controllers
                         if (!string.IsNullOrEmpty(formulario.IdAtleta) && formulario.IdEventoInscricao != 0)
                         {
                             EventoAtleta novaInscricao = new EventoAtleta();
-                            novaInscricao.IdAtleta = formulario.IdAtleta;
-                            novaInscricao.IdEvento = formulario.IdEventoInscricao;
+                            novaInscricao.Atleta = context.Atletas.FirstOrDefault(x => x.IdAtleta == formulario.IdAtleta);
+                            novaInscricao.Evento = context.Eventos.FirstOrDefault(x => x.IdEvento == formulario.IdEventoInscricao);
                             novaInscricao.InscricaoAtleta = "Ativa";
                             novaInscricao.DataInscricao = DateTime.Now;
-                            //teste
                             context.EventosAtletas.Add(novaInscricao);
 
                             context.SaveChanges();
@@ -213,7 +225,7 @@ namespace SportingTrainingAPI.Controllers
 
         [Route("CancelarInscricaoAtletaEmEvento")]
         [HttpPost]
-        public string CancelarInscricaoAtletaEmEvento(SimuladorFormularioDeAtleta formulario, string token)
+        public string CancelarInscricaoAtletaEmEvento([FromBody]SimuladorFormularioDeAtleta formulario, string token)
         {
             using (SportingTrainingEntities context = new SportingTrainingEntities())
             {
@@ -246,6 +258,81 @@ namespace SportingTrainingAPI.Controllers
                 {
                     throw new Exception("Erro ao cancelar inscrição de atleta no evento!", ex);
                 }
+            }
+        }
+
+        [Route("VisualizarInscricoesAtleta")]
+        [HttpPost]
+        public HttpResponseMessage VisualizarInscricoesAtleta([FromBody]SimuladorFormularioDeAtleta filtro, string token)
+        {
+            try
+            {
+                var response = new HttpResponseMessage(HttpStatusCode.OK);
+
+                Usuario usuarioSessao = usuarioController.UsuarioLogado(token);
+                if (usuarioSessao != null && usuarioSessao.TipoUsuario == "Atleta")
+                {
+                    List<EventoAtleta> listaDeInscricoes = BuscarInscricoesAtleta(filtro);
+                    List<InscricaoJson> inscricoesEmJson = new List<InscricaoJson>();
+
+                    foreach (var inscricao in listaDeInscricoes)
+                    {
+                        InscricaoJson inscricaoJson = new InscricaoJson
+                        {
+                            NomeAtleta = inscricao.Atleta.Nome,
+                            NomeEvento = inscricao.Evento.Nome,
+                            ModalidadeEvento = inscricao.Evento.Modalidade,
+                            SituacaoEvento = inscricao.Evento.Situacao,
+                            DataEvento = inscricao.Evento.Data,
+                            StatusInscricao = inscricao.InscricaoAtleta,
+                            DataInscricao = inscricao.DataInscricao
+                        };
+
+                        inscricoesEmJson.Add(inscricaoJson);
+                    }
+
+                    response.Content = new StringContent(JsonConvert.SerializeObject(inscricoesEmJson));
+                    response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");       
+                }
+                else
+                {
+                    response.Content = new StringContent("Usuário inválido!");
+                }
+                return response;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("", ex);
+            }
+        }
+
+        private List<EventoAtleta> BuscarInscricoesAtleta(SimuladorFormularioDeAtleta filtro)
+        {
+            using (SportingTrainingEntities context = new SportingTrainingEntities())
+            {
+                var consultaInscricoes = context.EventosAtletas.Include("Atleta").Include("Evento").Where(x => x.IdAtleta == filtro.IdAtleta).AsQueryable();
+
+                if (!string.IsNullOrEmpty(filtro.ModalidadeBusca))
+                {
+                    consultaInscricoes = consultaInscricoes.Where(x => x.Evento.Modalidade.Contains(filtro.ModalidadeBusca));
+                }
+                if (!string.IsNullOrEmpty(filtro.SituacaoBusca))
+                {
+                    consultaInscricoes = consultaInscricoes.Where(x => x.Evento.Situacao.ToUpper() == filtro.SituacaoBusca.ToUpper());
+                }
+                if (!string.IsNullOrEmpty(filtro.DataInicioBusca))
+                {
+                    DateTime dataInicioBusca = DateTime.Parse(filtro.DataInicioBusca);
+                    consultaInscricoes = consultaInscricoes.Where(x => x.DataInscricao >= dataInicioBusca);
+                }
+                if (!string.IsNullOrEmpty(filtro.DataFimBusca))
+                {
+                    DateTime dataFimBusca = DateTime.Parse(filtro.DataFimBusca);
+                    consultaInscricoes = consultaInscricoes.Where(x => x.DataInscricao <= dataFimBusca);
+                }
+
+                return consultaInscricoes.ToList();
             }
         }
     }
