@@ -1,0 +1,187 @@
+CREATE DATABASE  IF NOT EXISTS `sporting_training` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `sporting_training`;
+-- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
+--
+-- Host: localhost    Database: sporting_training
+-- ------------------------------------------------------
+-- Server version	5.7.21-log
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `atleta`
+--
+
+DROP TABLE IF EXISTS `atleta`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `atleta` (
+  `IdAtleta` varchar(45) NOT NULL,
+  `IdUsuario` varchar(45) NOT NULL,
+  `Nome` varchar(80) NOT NULL,
+  `Endereco` varchar(255) NOT NULL,
+  `DataNascimento` date NOT NULL,
+  `TipoSanguineo` varchar(5) NOT NULL,
+  `PlanoDeSaude` varchar(45) NOT NULL,
+  `Cpf` varchar(45) NOT NULL,
+  `Nacionalidade` varchar(45) NOT NULL,
+  `Equipe` varchar(45) NOT NULL,
+  PRIMARY KEY (`IdAtleta`),
+  KEY `fk_id_usuario_atleta_idx` (`IdUsuario`),
+  CONSTRAINT `fk_id_usuario_atleta` FOREIGN KEY (`IdUsuario`) REFERENCES `usuario` (`IdUsuario`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `atleta`
+--
+
+LOCK TABLES `atleta` WRITE;
+/*!40000 ALTER TABLE `atleta` DISABLE KEYS */;
+INSERT INTO `atleta` VALUES ('7d512f62-be5d-4294-a317-9f864dfa5fff','a17eddee-ea65-4e62-89ae-dd875d62856a','Atleta Teste','rua a','1993-09-10','A+','Unimed','111111111111','Brasileiro','Flamengo');
+/*!40000 ALTER TABLE `atleta` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `evento`
+--
+
+DROP TABLE IF EXISTS `evento`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `evento` (
+  `IdEvento` int(11) NOT NULL AUTO_INCREMENT,
+  `Nome` varchar(60) NOT NULL,
+  `Descricao` mediumtext NOT NULL,
+  `Data` date NOT NULL,
+  `Hora` time NOT NULL,
+  `Local` varchar(45) NOT NULL,
+  `Estado` varchar(2) NOT NULL,
+  `Modalidade` varchar(45) NOT NULL,
+  `ValorInscricao` decimal(10,2) NOT NULL,
+  `TerminoInscricoes` datetime NOT NULL,
+  `TempoLimiteEvento` time NOT NULL,
+  `Responsavel` varchar(60) NOT NULL,
+  `Percurso` mediumtext,
+  `Situacao` enum('Ativo','Cancelado') NOT NULL DEFAULT 'Ativo',
+  `MotivoCancelamento` mediumtext,
+  PRIMARY KEY (`IdEvento`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `evento`
+--
+
+LOCK TABLES `evento` WRITE;
+/*!40000 ALTER TABLE `evento` DISABLE KEYS */;
+INSERT INTO `evento` VALUES (1,'evento teste (alterado)','evento para testar funcao de alterar','2019-01-10','17:30:00','Juiz de Fora','MG','Corrida 2',30.00,'2018-12-28 00:00:00','02:30:00','Antonio',NULL,'Ativo','teve que cancelar'),(2,'evento teste (alterado) 2','evento para testar funcao de alterar','2019-01-11','17:30:00','Juiz de Fora','MG','Modalidade de teste',30.00,'2018-12-28 00:00:00','02:30:00','Antonio',NULL,'Cancelado',NULL);
+/*!40000 ALTER TABLE `evento` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `evento_atleta`
+--
+
+DROP TABLE IF EXISTS `evento_atleta`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `evento_atleta` (
+  `IdEventoAtleta` int(11) NOT NULL AUTO_INCREMENT,
+  `IdEvento` int(11) NOT NULL,
+  `IdAtleta` varchar(45) NOT NULL,
+  `InscricaoAtleta` enum('Ativa','Cancelada') NOT NULL DEFAULT 'Ativa',
+  `DataInscricao` date NOT NULL,
+  PRIMARY KEY (`IdEventoAtleta`),
+  KEY `fk_evento_atleta_id_evento_idx` (`IdEvento`),
+  KEY `fk_evento_atleta_id_atleta_idx` (`IdAtleta`),
+  CONSTRAINT `fk_evento_atleta_id_atleta` FOREIGN KEY (`IdAtleta`) REFERENCES `atleta` (`IdAtleta`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_evento_atleta_id_evento` FOREIGN KEY (`IdEvento`) REFERENCES `evento` (`IdEvento`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `evento_atleta`
+--
+
+LOCK TABLES `evento_atleta` WRITE;
+/*!40000 ALTER TABLE `evento_atleta` DISABLE KEYS */;
+INSERT INTO `evento_atleta` VALUES (1,1,'7d512f62-be5d-4294-a317-9f864dfa5fff','Cancelada','2018-11-16');
+/*!40000 ALTER TABLE `evento_atleta` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `login_usuario`
+--
+
+DROP TABLE IF EXISTS `login_usuario`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `login_usuario` (
+  `IdLoginUsuario` int(11) NOT NULL AUTO_INCREMENT,
+  `IdUsuario` varchar(45) NOT NULL,
+  `Token` varchar(45) NOT NULL,
+  `InicioSessao` datetime NOT NULL,
+  `FimSessao` datetime NOT NULL,
+  PRIMARY KEY (`IdLoginUsuario`),
+  KEY `fk_id_usuario_login_usuario_idx` (`IdUsuario`),
+  CONSTRAINT `fk_id_usuario_login_usuario` FOREIGN KEY (`IdUsuario`) REFERENCES `usuario` (`IdUsuario`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `login_usuario`
+--
+
+LOCK TABLES `login_usuario` WRITE;
+/*!40000 ALTER TABLE `login_usuario` DISABLE KEYS */;
+INSERT INTO `login_usuario` VALUES (1,'2ecfa477-fd31-45f6-bd28-7961c66c0973','eff22c9c021347a1a12b96134ae78bf9','2018-11-15 13:00:10','2018-11-17 17:00:10'),(3,'a17eddee-ea65-4e62-89ae-dd875d62856a','26f8130f2b1e46f4a8065cc666ae4882','2018-11-16 23:30:24','2018-11-18 00:00:24');
+/*!40000 ALTER TABLE `login_usuario` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `usuario`
+--
+
+DROP TABLE IF EXISTS `usuario`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `usuario` (
+  `IdUsuario` varchar(45) NOT NULL,
+  `Login` varchar(45) NOT NULL,
+  `Senha` varchar(45) NOT NULL,
+  `NomeUsuario` varchar(45) NOT NULL,
+  `TipoUsuario` enum('Administrador','Atleta') NOT NULL DEFAULT 'Administrador',
+  PRIMARY KEY (`IdUsuario`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `usuario`
+--
+
+LOCK TABLES `usuario` WRITE;
+/*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
+INSERT INTO `usuario` VALUES ('2ecfa477-fd31-45f6-bd28-7961c66c0973','usuario1','123','Usuario 1','Administrador'),('a17eddee-ea65-4e62-89ae-dd875d62856a','atleta1','123','Atleta 1','Atleta');
+/*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2018-11-23 18:32:38
