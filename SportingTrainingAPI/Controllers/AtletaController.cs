@@ -331,7 +331,7 @@ namespace SportingTrainingAPI.Controllers
                     DateTime dataFimBusca = DateTime.Parse(filtro.DataFimBusca);
                     consultaInscricoes = consultaInscricoes.Where(x => x.DataInscricao <= dataFimBusca);
                 }
-
+                //
                 return consultaInscricoes.ToList();
             }
         }
